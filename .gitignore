@@ -1,0 +1,5 @@
+docker-compose.dev.yml
+backend/target
+.idea
+db
+node_modules
