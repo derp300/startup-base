@@ -97,6 +97,26 @@
             <artifactId>postgresql</artifactId>
             <version>${postgres.jdbc.version}</version>
         </dependency>
+
+
+
+
+        <dependency>
+            <groupId>com.github.docker-java</groupId>
+            <artifactId>docker-java</artifactId>
+            <version>3.1.0-rc-6</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport-native-epoll</artifactId>
+            <version>4.1.32.Final</version>
+            <classifier>linux-x86_64</classifier>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.spotify</groupId>-->
+            <!--<artifactId>docker-client</artifactId>-->
+            <!--<version>8.14.5</version>-->
+        <!--</dependency>-->
     </dependencies>
 
     <build>
