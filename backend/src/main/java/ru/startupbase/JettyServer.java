@@ -1,6 +1,7 @@
 package ru.startupbase;
 
 import java.lang.management.ManagementFactory;
+import java.util.Arrays;
 import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -12,7 +13,7 @@ import org.springframework.context.ApplicationContext;
 import static ru.startupbase.JerseyHandler.createJerseyHandler;
 
 public class JettyServer {
-  static Server createServer(ApplicationContext context) throws Exception {
+  private static Server createServer(ApplicationContext context) throws Exception {
     final Handler jerseyHandler = createJerseyHandler(context);
 
     int minThreads = 10;
@@ -31,6 +32,18 @@ public class JettyServer {
     server.setStopTimeout(5_000);
 
     return server;
+  }
+
+  static void startJettyServer(ApplicationContext context) throws Exception {
+    final Server jettyServer = createServer(context);
+
+    jettyServer.start();
+
+    int port = ((ServerConnector) Arrays.stream(jettyServer.getConnectors())
+        .filter(a -> a instanceof ServerConnector).findFirst().get())
+        .getLocalPort();
+
+    System.out.println("listening to port " + port);
   }
 
   private static void configureServerConnector(Server server) {

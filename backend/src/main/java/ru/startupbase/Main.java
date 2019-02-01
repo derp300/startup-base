@@ -1,5 +1,11 @@
 package ru.startupbase;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -7,16 +13,14 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import static ru.startupbase.JettyServer.startJettyServer;
 import ru.startupbase.antlr4.Java8BaseListener;
 import ru.startupbase.antlr4.Java8Lexer;
 import ru.startupbase.antlr4.Java8Parser;
 import ru.startupbase.config.ProdConfig;
 import org.antlr.v4.runtime.CharStreams;
 
-import java.util.*;
-
 import static java.text.MessageFormat.format;
-import static ru.startupbase.JettyServer.createServer;
 
 public class Main {
 
@@ -43,7 +47,15 @@ public class Main {
       }
     }
 
-    String javaClassContent = "public class SampleClass { void doSomething(){int a = 4; int b = 5; int c = a + b;} }";
+//    List.of(1).stream().map(i -> i+1).collect(Collectors.toList());
+
+    String javaClassContent = "import java.util.List;" +
+        "import java.util.stream.Collectors;" +
+        "public class SampleClass {" +
+        "void doSomething(){" +
+        "List.of(1).stream().map(i -> i+1).collect(Collectors.toList());" +
+        "}" +
+        "}";
     Java8Lexer java8Lexer = new Java8Lexer(CharStreams.fromString(javaClassContent));
 
     CommonTokenStream tokens = new CommonTokenStream(java8Lexer);
@@ -51,7 +63,7 @@ public class Main {
     ParseTree tree = parser.compilationUnit();
 
     ParseTreeWalker walker = new ParseTreeWalker();
-    UppercaseMethodListener listener= new UppercaseMethodListener();
+    UppercaseMethodListener listener = new UppercaseMethodListener();
 
     walker.walk(listener, tree);
 
@@ -80,22 +92,19 @@ public class Main {
     System.out.println("done");
     System.exit(0);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ProdConfig.class);
+
+
+
+
+
+
+
 
     try {
-      final Server jettyServer = createServer(context);
-      final int port = startJettyServer(jettyServer);
-      System.out.println("listening to port " + port);
+      startJettyServer(new AnnotationConfigApplicationContext(ProdConfig.class));
     } catch (Exception e) {
       System.err.println(format("[{0}] Failed to start, shutting down: {1}", new Date(), e.getMessage()));
       System.exit(1);
     }
-  }
-
-  private static int startJettyServer(Server jettyServer) throws Exception {
-    jettyServer.start();
-    return ((ServerConnector) Arrays.stream(jettyServer.getConnectors())
-        .filter(a -> a instanceof ServerConnector).findFirst().get())
-        .getLocalPort();
   }
 }
